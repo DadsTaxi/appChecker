@@ -1,3 +1,4 @@
+
 # This is a basic workflow to help you get started with Actions
 
 name: List App Installs
@@ -49,7 +50,7 @@ jobs:
 
       - name: Get List 
         env:
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ steps.get_token.outputs.jwt }}
         run: |
           mkdir -p output
           gh api -H "Authorization: Bearer ${{ steps.get_token.outputs.jwt }}" orgs/${{matrix.org}}/installation > output/${{matrix.org}}.json
@@ -72,4 +73,4 @@ jobs:
           labels: |
             bug
             automation
-        
+       
