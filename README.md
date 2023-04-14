@@ -1,5 +1,8 @@
 # appChecker
 
+**Warning**
+NO WARRANTY. USE AT OWN RISK.
+
 ## Functionality
 A workflow is defined in this repo that does the following
 1. Reads a list of organizations using REST Api (this is currently hard-coded for this demo)
