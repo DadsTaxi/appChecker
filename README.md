@@ -26,10 +26,12 @@ The next organization do not have the app installed and the last one is where an
 
 ><img width="1162" alt="image" src="https://user-images.githubusercontent.com/107459714/231984971-bc0ceffd-47be-435a-9a4b-836cafb28650.png">
 
-###
-
 ### Org does not exist or app not installed
 ><img width="573" alt="image" src="https://user-images.githubusercontent.com/107459714/231986017-5039c9dc-3b25-41ad-a901-20451ff63de0.png">
 
 ### Example issue
 ><img width="1472" alt="image" src="https://user-images.githubusercontent.com/107459714/231986289-9dfe7153-8fa1-4d08-87f0-565303947259.png">
+
+
+## Thanks
+Credit to @affrae
