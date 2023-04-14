@@ -1,0 +1,75 @@
+# This is a basic workflow to help you get started with Actions
+
+name: List App Installs
+
+on:
+  # manual dispatch
+  workflow_dispatch:
+
+jobs:
+
+  matrix_maker:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.result }}
+    steps:
+      - uses: actions/github-script@v6
+        id: set-matrix
+        with:
+          script: |
+            try {
+            // programmatically build the list of orgs (with whatever token needed), here I will hard code
+            return ["emu-appdemo", "emu-appdemo-withapp", "emu-appdemo-withoutapp", "non-existant"]
+            }
+            catch {
+              core.setFailed(`Failed to get list of orgs: ${error}`)
+            }
+
+      - name: Debug output
+        run: echo "${{ steps.set-matrix.outputs.result }}"
+
+  list_app_installs:
+    needs: matrix_maker
+    name: List App Installs
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        org: ${{fromJson(needs.matrix_maker.outputs.matrix)}}
+    steps:                            
+      - name: GitHub app JWT and installation access token generation
+        id: get_token
+        uses: jamestrousdale/github-app-jwt-token@0.1.4
+        with:
+          app-id: ${{ secrets.LISTINSTALLS_APPID }}
+          private-key: ${{ secrets.LISTINSTALLS_KEY }}
+
+      - name: GH Version
+        run: gh --version
+
+      - name: Get List 
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p output
+          gh api -H "Authorization: Bearer ${{ steps.get_token.outputs.jwt }}" orgs/${{matrix.org}}/installation > output/${{matrix.org}}.json
+
+      - name: Upload list result for ${{matrix.org}}
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{matrix.org}}
+          path: output/${{matrix.org}}.json
+
+      - name: Create an issue if failure
+        if: failure()
+        uses: actions-ecosystem/action-create-issue@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          title: The List App Installs job failed to run for ${{matrix.org}}.
+          body: |
+            The List App Installs job failed to run for ${{matrix.org}}.
+
+          labels: |
+            bug
+            automation
+        
